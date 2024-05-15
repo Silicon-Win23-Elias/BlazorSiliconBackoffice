@@ -123,13 +123,23 @@
 
     public async Task GetUserInfo(string userId)
     {
-        user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-        editingUser.FirstName = user.FirstName;
-        editingUser.LastName = user.LastName;
-        editingUser.IsAdmin = user.IsAdmin;
-        editingUser.IsSubscribed = user.IsSubscribed;
-        StatusMessage = "";
-        DisableInputs = false;
+        try
+        {
+            user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
+            editingUser.FirstName = user.FirstName;
+            editingUser.LastName = user.LastName;
+            editingUser.IsAdmin = user.IsAdmin;
+            editingUser.IsSubscribed = user.IsSubscribed;
+
+            StatusMessage = "";
+            DisableInputs = false;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            StatusMessage = "User was not updated, something went wrong.";
+        }
     }
 
     private async Task OnValidSubmit(ApplicationUser editingUser)
