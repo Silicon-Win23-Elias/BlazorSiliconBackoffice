@@ -1,0 +1,12 @@
+﻿#management {
+  padding-top: 40px;
+}
+#management .container {
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  #management .container {
+    flex-direction: row;
+  }
+}

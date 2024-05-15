@@ -1,0 +1,27 @@
+.list {
+    flex: 1;
+    padding-right: 10px;
+
+    @media(min-width: 768px) {
+        border-right: 1px solid #D4D7E5;
+    }
+
+    h3 {
+        color: #6366F1;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .menu {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+
+        button {
+            text-decoration: none;
+            border: none;
+            font-weight: 600;
+        }
+    }
+}

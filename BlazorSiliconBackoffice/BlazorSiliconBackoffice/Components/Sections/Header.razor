@@ -1,0 +1,33 @@
+﻿@using BlazorSiliconBackoffice.Components.Account
+<header>
+    <div class="container">
+        <a id="logo" href="/"><img id="logoImg" src="/images/silicon-logo-light_theme.svg" alt="silicon logo"></a>
+        <AuthorizeView>
+            <Authorized>
+                <div id="buttons" class="buttons">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="" />
+                        <button type="submit" class="btn-gray"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+                    </form>
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+                <div id="buttons" class="buttons">
+                    <NavLink class="btn-gray" href="/account/login"><i class="fa-regular fa-right-to-bracket"></i><p>Sign In</p></NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <div id="menu">
+            <nav>
+                <NavLink class="menu-link" href="/">User management</NavLink>
+                <NavLink class="menu-link" href="/coursemanagement">Course management</NavLink>
+            </nav>
+        </div>
+    </div>
+</header>
+
+@code {
+}

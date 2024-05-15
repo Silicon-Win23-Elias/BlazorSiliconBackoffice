@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "Components/Components/ManagementLeftSide.razor.css",
+    "inputFile": "Components/Components/ManagementLeftSide.razor.scss"
+  },
+  {
+    "outputFile": "Components/Components/UserInfo.razor.css",
+    "inputFile": "Components/Components/UserInfo.razor.scss"
+  }
+]

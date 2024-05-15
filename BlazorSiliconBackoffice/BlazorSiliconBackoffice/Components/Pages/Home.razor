@@ -1,0 +1,162 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<PageTitle>Home</PageTitle>
+
+<section id="management">
+    <div class="container">
+        <div class="list">
+            <h3>Users</h3>
+            <div class="menu">
+                <button class="btn-theme" @onclick="() => ShowUsers()">@buttonText</button>
+                @foreach (var user in users)
+                {
+                    <a href="#details">
+                        <button @onclick="() => GetUserInfo(user.Id)" class="@setClass btn-white">@user.FirstName @user.LastName</button>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div id="details" class="details">
+            <h1>Manage user</h1>
+            <EditForm FormName="userForm" Model="editingUser" OnValidSubmit="() => OnValidSubmit(editingUser)" id="addressInfo" method="post" class="address" novalidate>
+                <h4>Details</h4>
+                    <div class="address-lines">
+                        <div class="label-input">
+                            <label>First name</label>
+                        <InputText @bind-Value="editingUser.FirstName" class="input" placeholder="Enter first name" disabled="@(DisableInputs)" />
+                        </div>
+                        <div class="label-input">
+                            <label>Last name</label>
+                        <InputText @bind-Value="editingUser.LastName" class="input" placeholder="Enter last name" disabled="@(DisableInputs)" />
+                        </div>
+                    </div>
+                    <div class="address-lines">
+                        <div class="label-input">
+                        <InputCheckbox @bind-Value="editingUser.IsAdmin" class="checkbox" disabled="@(DisableInputs)" />
+                            <label>Admin</label>
+                        </div>
+                        <div class="label-input">
+                        <InputCheckbox @bind-Value="editingUser.IsSubscribed" class="checkbox" disabled="@(DisableInputs)" />
+                            <label>Newsletter</label>
+                        </div>
+                    </div>
+                    <p>@StatusMessage</p>
+                    <div class="buttons">
+                        <button type="reset" class="btn-gray" disabled="@(DisableInputs)">Cancel</button>
+                        <button type="submit" class="btn-theme" disabled="@(DisableInputs)">Save changes</button>
+                    </div>
+            </EditForm>
+
+            <div class="savedCourses">
+                <h4>User saved courses</h4>
+                <div class="courseInfo">
+                    <div class="info">
+                        <p class="title">Fullstack Web Developer Course from Scratch</p>
+                        <p class="author">By Robert Fox</p>
+                    </div>
+                    <button class="btn-red" type="button">Remove</button>
+                </div>
+                <div class="courseInfo">
+                    <div class="info">
+                        <p class="title">Fullstack Web</p>
+                        <p class="author">By Robert Fox</p>
+                    </div>
+                    <button class="btn-red" type="button">Remove</button>
+                </div>
+                <div class="courseInfo">
+                    <div class="info">
+                        <p class="title">Fullstack Web Developer Course from Scratch</p>
+                        <p class="author">By Robert Fox</p>
+                    </div>
+                    <button class="btn-red" type="button">Remove</button>
+                </div>
+                <div class="courseInfo">
+                    <div class="info">
+                        <p class="title">Fullstack Web Developer Course from Scratch</p>
+                        <p class="author">By Robert Fox</p>
+                    </div>
+                    <button class="btn-red" type="button">Remove</button>
+                </div>
+                <div class="courseInfo">
+                    <div class="info">
+                        <p class="title">Fullstack Web Developer Course from Scratch</p>
+                        <p class="author">By Robert Fox</p>
+                    </div>
+                    <button class="btn-red" type="button">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    public string StatusMessage { get; set; } = null!;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    public ApplicationUser user = new ApplicationUser();
+    public ApplicationUser editingUser = new ApplicationUser();
+    public string setClass = "hide";
+    public string buttonText = "Show list of users";
+    public bool DisableInputs { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await _context.Users.ToListAsync();
+    }
+
+    public void ShowUsers()
+    {
+        if (setClass == "")
+        {
+            setClass = "hide";
+            buttonText = "Show list of users";
+        }
+        else
+        {
+            setClass = "";
+            buttonText = "Hide list of users";
+        }
+    }
+
+
+    public async Task GetUserInfo(string userId)
+    {
+        user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        editingUser.FirstName = user.FirstName;
+        editingUser.LastName = user.LastName;
+        editingUser.IsAdmin = user.IsAdmin;
+        editingUser.IsSubscribed = user.IsSubscribed;
+        StatusMessage = "";
+        DisableInputs = false;
+    }
+
+    private async Task OnValidSubmit(ApplicationUser editingUser)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(editingUser.FirstName) && editingUser.FirstName.Length >= 2 &&
+                !string.IsNullOrEmpty(editingUser.LastName) && editingUser.LastName.Length >= 2)
+            {
+                user.FirstName = editingUser.FirstName;
+                user.LastName = editingUser.LastName;
+                user.IsAdmin = editingUser.IsAdmin;
+                user.IsSubscribed = editingUser.IsSubscribed;
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                StatusMessage = "User was updated successfully.";
+            }
+            else
+            {
+                StatusMessage = "Both name inputs needs to have at least 2 characters.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            StatusMessage = "User was not updated, something went wrong.";
+        }
+    }
+}

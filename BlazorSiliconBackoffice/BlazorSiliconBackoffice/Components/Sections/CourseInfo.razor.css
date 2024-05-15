@@ -1,0 +1,139 @@
+﻿.details {
+  flex: 2;
+}
+@media (min-width: 768px) {
+  .details {
+    padding-left: 30px;
+  }
+}
+@media (min-width: 992px) {
+  .details {
+    padding-left: 100px;
+    flex: 3;
+  }
+}
+.details ::deep .checkbox {
+  margin-right: 0.5rem;
+}
+.details label {
+  font-weight: 600;
+  color: #0B0F19;
+}
+.details h1 {
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .details h1 {
+    text-align: left;
+  }
+}
+.details h4 {
+  color: #6366F1;
+  text-align: center;
+  margin-top: 2rem;
+}
+@media (min-width: 768px) {
+  .details h4 {
+    text-align: left;
+  }
+}
+.details #uploadFile {
+  display: block;
+}
+.details .message {
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .details .message {
+    text-align: left;
+  }
+}
+.details .message.error {
+  color: #EF4444;
+}
+.details .message.success {
+  color: #048316;
+}
+.details h6 {
+  font-weight: 600;
+}
+.details h6 span {
+  font-weight: 500;
+  color: #B4B7C9;
+}
+@media (min-width: 768px) {
+  .details .group {
+    display: flex;
+    gap: 20px;
+  }
+}
+.details .label-input {
+  display: block;
+  flex: 1;
+  padding-bottom: 30px;
+}
+.details span {
+  font-size: 14px;
+  color: #EF4444;
+}
+.details .program-description {
+  margin-top: 0rem;
+  margin-bottom: 3rem;
+}
+.details ::deep .input {
+  display: block;
+  width: 100%;
+  border: 1px solid #E2E5F1;
+  border-radius: 8px;
+  outline-color: #6366F1;
+  padding: 12px 10px;
+  background-color: #FFFFFF;
+}
+.details ::deep .input:disabled {
+  background-color: #E2E5F1;
+}
+.details ::deep .input.input-validation-error {
+  color: #EF4444;
+  border-color: #EF4444;
+}
+.details .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+@media (min-width: 768px) {
+  .details .buttons {
+    justify-content: baseline;
+  }
+}
+.details .basic-info textarea {
+  resize: none;
+}
+.details .address {
+  margin-top: 30px;
+}
+.details .savedCourses {
+  padding-top: 2rem;
+  margin-top: 5rem;
+  max-width: 576px;
+  border-top: 1px solid #D4D7E5;
+}
+.details .savedCourses .courseInfo {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0rem;
+  border-bottom: 1px solid #D4D7E5;
+}
+.details .savedCourses .courseInfo .info .title {
+  margin: 0;
+  font-weight: 600;
+  color: #0B0F19;
+}
+.details .savedCourses .courseInfo .info .author {
+  margin: 0;
+}
+.details .savedCourses .courseInfo .btn-red {
+  padding: 0px 10px;
+  margin-left: 0.5rem;
+}

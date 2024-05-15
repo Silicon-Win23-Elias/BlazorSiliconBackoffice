@@ -1,0 +1,30 @@
+﻿[
+  {
+    "outputFile": "Components/Sections/Header.razor.css",
+    "inputFile": "Components/Sections/Header.razor.scss"
+  },
+  {
+    "outputFile": "Components/Pages/Home.razor.css",
+    "inputFile": "Components/Pages/Home.razor.scss"
+  },
+  {
+    "outputFile": "Components/Sections/ManagementLeftSide.razor.css",
+    "inputFile": "Components/Sections/ManagementLeftSide.razor.scss"
+  },
+  {
+    "outputFile": "Components/Sections/UserInfo.razor.css",
+    "inputFile": "Components/Sections/UserInfo.razor.scss"
+  },
+  {
+    "outputFile": "Components/Pages/CourseManagement.razor.css",
+    "inputFile": "Components/Pages/CourseManagement.razor.scss"
+  },
+  {
+    "outputFile": "Components/Sections/CourseInfo.razor.css",
+    "inputFile": "Components/Sections/CourseInfo.razor.scss"
+  },
+  {
+    "outputFile": "Components/Account/Pages/Login.razor.css",
+    "inputFile": "Components/Account/Pages/Login.razor.scss"
+  }
+]

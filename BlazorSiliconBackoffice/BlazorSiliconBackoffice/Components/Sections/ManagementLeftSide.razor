@@ -1,0 +1,18 @@
+﻿<div class="list">
+    <h3>Users</h3>
+    <div class="menu">
+        @foreach (var user in users)
+        {
+            <button class="btn-white">@user.FirstName @user.LastName</button>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await _context.Users.ToListAsync();
+    }
+}

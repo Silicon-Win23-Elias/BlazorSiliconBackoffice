@@ -1,0 +1,23 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using BlazorSiliconBackoffice.Data
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using BlazorSiliconBackoffice
+@using BlazorSiliconBackoffice.Client
+@using BlazorSiliconBackoffice.Components
+@using Microsoft.EntityFrameworkCore;
+@using System.Diagnostics
+@using System.ComponentModel.DataAnnotations
+
+@inject HttpClient Http
+@inject ApplicationDbContext _context
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager

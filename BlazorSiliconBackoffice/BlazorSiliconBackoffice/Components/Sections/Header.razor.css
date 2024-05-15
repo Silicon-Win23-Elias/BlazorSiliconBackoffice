@@ -1,0 +1,78 @@
+﻿header {
+  padding: 15px 0;
+}
+header .container {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "logo buttons" "menu menu";
+  row-gap: 20px;
+}
+@media (min-width: 992px) {
+  header .container {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "logo menu buttons";
+    gap: 40px;
+  }
+}
+header .container #logo {
+  grid-area: logo;
+}
+header .container .hide {
+  display: none;
+}
+header .container .hide-conditional {
+  display: none;
+}
+header .container #menu {
+  grid-area: menu;
+  justify-self: center;
+}
+@media (min-width: 992px) {
+  header .container #menu {
+    display: block;
+    justify-self: baseline;
+  }
+}
+header .container #menu nav {
+  display: flex;
+  gap: 15px;
+}
+header .container #menu .menu-link.hide {
+  display: none;
+}
+header .container .button {
+  grid-area: buttons;
+  justify-self: center;
+}
+header .container .button img {
+  width: 44px;
+  border-radius: 50%;
+}
+@media (min-width: 992px) {
+  header .container .button {
+    display: flex;
+  }
+}
+header .container .buttons {
+  grid-area: buttons;
+}
+header .container .buttons p {
+  margin-bottom: 0;
+}
+header .container .buttons a {
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+@media (min-width: 992px) {
+  header .container .buttons a {
+    margin-bottom: 0;
+    margin-left: 10px;
+  }
+}
+@media (min-width: 992px) {
+  header .container .buttons {
+    display: flex;
+    flex-direction: row;
+  }
+}

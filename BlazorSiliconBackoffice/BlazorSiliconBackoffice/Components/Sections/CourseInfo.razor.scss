@@ -1,0 +1,164 @@
+.details {
+    flex: 2;
+
+    @media(min-width: 768px) {
+        padding-left: 30px;
+    }
+
+    @media(min-width: 992px) {
+        padding-left: 100px;
+        flex: 3;
+    }
+
+    ::deep .checkbox {
+        margin-right: 0.5rem;
+    }
+
+    label {
+        font-weight: 600;
+        color: #0B0F19;
+    }
+
+    h1 {
+        text-align: center;
+
+        @media(min-width: 768px) {
+            text-align: left;
+        }
+    }
+
+    h4 {
+        color: #6366F1;
+        text-align: center;
+        margin-top: 2rem;
+
+        @media(min-width: 768px) {
+            text-align: left;
+        }
+    }
+
+    #uploadFile {
+        display: block;
+    }
+
+    .message {
+        text-align: center;
+
+        @media(min-width: 768px) {
+            text-align: left;
+        }
+
+        &.error {
+            color: #EF4444;
+        }
+
+        &.success {
+            color: #048316;
+        }
+    }
+
+    h6 {
+        font-weight: 600;
+
+        span {
+            font-weight: 500;
+            color: #B4B7C9;
+        }
+    }
+
+    .group {
+
+        @media(min-width: 768px) {
+            display: flex;
+            gap: 20px;
+        }
+    }
+
+    .label-input {
+        display: block;
+        flex: 1;
+        padding-bottom: 30px;
+    }
+
+    span {
+        font-size: 14px;
+        color: #EF4444;
+    }
+
+    .program-description {
+        margin-top: 0rem;
+        margin-bottom: 3rem;
+    }
+
+    ::deep .input {
+        display: block;
+        width: 100%;
+        border: 1px solid #E2E5F1;
+        border-radius: 8px;
+        outline-color: #6366F1;
+        padding: 12px 10px;
+        background-color: #FFFFFF;
+
+        &:disabled {
+            background-color: #E2E5F1;
+        }
+
+        &.input-validation-error {
+            color: #EF4444;
+            border-color: #EF4444;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+
+        @media(min-width: 768px) {
+            justify-content: baseline;
+        }
+    }
+
+    .basic-info {
+        textarea {
+            resize: none;
+        }
+    }
+
+    .address {
+        margin-top: 30px;
+    }
+
+    .savedCourses {
+        padding-top: 2rem;
+        margin-top: 5rem;
+        max-width: 576px;
+        border-top: 1px solid #D4D7E5;
+
+        .courseInfo {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0rem;
+            border-bottom: 1px solid #D4D7E5;
+
+            .info {
+
+                .title {
+                    margin: 0;
+                    font-weight: 600;
+                    color: #0B0F19;
+                }
+
+                .author {
+                    margin: 0;
+                }
+            }
+
+            .btn-red {
+                padding: 0px 10px;
+                margin-left: 0.5rem;
+            }
+        }
+    }
+}
