@@ -1,14 +1,21 @@
 ﻿@page "/coursemanagement"
+@rendermode InteractiveServer
 @using BlazorSiliconBackoffice.Components.Sections
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 <section id="management">
     <div class="container">
-        <ManagementLeftSide />
-        <CourseInfo />
+        <ManagementLeftSide OnSendMessage="HandleMessage" />
+        <CourseInfo Message=@Id/>
     </div>
 </section>
 
 
 @code {
+    private string Id;
 
+    private void HandleMessage(string message)
+    {
+        Id = message;
+    }
 }

@@ -18,8 +18,28 @@
   width: 100%;
   align-items: center;
 }
+.list .menu .btn-theme {
+  margin-bottom: 1rem;
+}
+@media (min-width: 768px) {
+  .list .menu .btn-theme {
+    display: none;
+  }
+}
+.list .menu .btn-theme:hover {
+  cursor: pointer;
+}
 .list .menu button {
   text-decoration: none;
   border: none;
   font-weight: 600;
+}
+
+.hide {
+  display: none;
+}
+@media (min-width: 768px) {
+  .hide {
+    display: flex;
+  }
 }

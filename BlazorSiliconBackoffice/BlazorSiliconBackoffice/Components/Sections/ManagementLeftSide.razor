@@ -1,18 +1,81 @@
-﻿<div class="list">
-    <h3>Users</h3>
+﻿@using Newtonsoft.Json
+@inject NavigationManager NavigationManager
+
+<div class="list">
+    <h3>Courses</h3>
     <div class="menu">
-        @foreach (var user in users)
+        <button class="btn-theme" @onclick="() => ShowCourses()">@buttonText</button>
+        @foreach (var course in courseList)
         {
-            <button class="btn-white">@user.FirstName @user.LastName</button>
+            <button class="@setClass btn-white" @onclick="() => SendMessage(course.Id)">@course.Title</button>
         }
     </div>
 </div>
 
+
 @code {
-    private List<ApplicationUser> users = new List<ApplicationUser>();
+
+    private List<CourseCardModel> courseList = new();
+    public string setClass = "hide";
+    public string buttonText = "Show list of courses";
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; } = null!;
+    }
+
+    public class RootObject
+    {
+        public GetCoursesResponse Data { get; set; } = null!;
+    }
+
+    public class GetCoursesResponse
+    {
+        public List<CourseCardModel> GetCourses { get; set; } = null!;
+    }
+
+    public class CourseCardModel
+    {
+        public string Id { get; set; } = null!;
+        public string? Title { get; set; }
+    }
+
+    [Parameter] 
+    public EventCallback<string> OnSendMessage { get; set; }
+
+    private void SendMessage(string id)
+    {
+        OnSendMessage.InvokeAsync(id);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        users = await _context.Users.ToListAsync();
+        var query = new GraphQLQuery { Query = "query { getCourses { id title } }" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<RootObject>(jsonString);
+
+            foreach (var course in result!.Data.GetCourses)
+            {
+                courseList.Add(course);
+            }
+        }
+    }
+
+    public void ShowCourses()
+    {
+        if (setClass == "")
+        {
+            setClass = "hide";
+            buttonText = "Show list of courses";
+        }
+        else
+        {
+            setClass = "";
+            buttonText = "Hide list of courses";
+        }
     }
 }

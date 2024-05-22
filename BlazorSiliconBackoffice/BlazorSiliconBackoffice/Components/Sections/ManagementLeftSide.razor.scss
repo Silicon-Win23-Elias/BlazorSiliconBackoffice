@@ -18,10 +18,30 @@
         width: 100%;
         align-items: center;
 
+        .btn-theme {
+            margin-bottom: 1rem;
+
+            @media(min-width: 768px) {
+                display: none;
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
         button {
             text-decoration: none;
             border: none;
             font-weight: 600;
         }
+    }
+}
+
+.hide {
+    display: none;
+
+    @media(min-width: 768px) {
+        display: flex;
     }
 }

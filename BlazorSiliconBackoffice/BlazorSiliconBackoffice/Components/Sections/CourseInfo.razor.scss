@@ -10,6 +10,16 @@
         flex: 3;
     }
 
+    .top-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+
+        @media(min-width: 768px) {
+            justify-content: start;
+        }
+    }
+
     ::deep .checkbox {
         margin-right: 0.5rem;
     }

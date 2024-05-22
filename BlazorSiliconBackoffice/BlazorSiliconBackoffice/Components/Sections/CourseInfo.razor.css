@@ -12,6 +12,16 @@
     flex: 3;
   }
 }
+.details .top-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .details .top-buttons {
+    justify-content: start;
+  }
+}
 .details ::deep .checkbox {
   margin-right: 0.5rem;
 }

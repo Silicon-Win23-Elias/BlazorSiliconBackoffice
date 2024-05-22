@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using Newtonsoft.Json
 @rendermode InteractiveServer
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
@@ -52,41 +54,20 @@
 
             <div class="savedCourses">
                 <h4>User saved courses</h4>
-                <div class="courseInfo">
-                    <div class="info">
-                        <p class="title">Fullstack Web Developer Course from Scratch</p>
-                        <p class="author">By Robert Fox</p>
+                @foreach (var course in courses)
+                {
+                    <div class="courseInfo">
+                        <div class="info">
+                            <p class="title">@course.Title</p>
+                            <p class="author">By @foreach (var author in course.Authors)
+                                {
+                                    @author.Name
+                                }
+                            </p>
+                        </div>
+                        <button class="btn-red" @onclick="(() => RemoveCourse(course.Id))">Remove</button>
                     </div>
-                    <button class="btn-red" type="button">Remove</button>
-                </div>
-                <div class="courseInfo">
-                    <div class="info">
-                        <p class="title">Fullstack Web</p>
-                        <p class="author">By Robert Fox</p>
-                    </div>
-                    <button class="btn-red" type="button">Remove</button>
-                </div>
-                <div class="courseInfo">
-                    <div class="info">
-                        <p class="title">Fullstack Web Developer Course from Scratch</p>
-                        <p class="author">By Robert Fox</p>
-                    </div>
-                    <button class="btn-red" type="button">Remove</button>
-                </div>
-                <div class="courseInfo">
-                    <div class="info">
-                        <p class="title">Fullstack Web Developer Course from Scratch</p>
-                        <p class="author">By Robert Fox</p>
-                    </div>
-                    <button class="btn-red" type="button">Remove</button>
-                </div>
-                <div class="courseInfo">
-                    <div class="info">
-                        <p class="title">Fullstack Web Developer Course from Scratch</p>
-                        <p class="author">By Robert Fox</p>
-                    </div>
-                    <button class="btn-red" type="button">Remove</button>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -95,6 +76,9 @@
 @code {
     public string StatusMessage { get; set; } = null!;
     private List<ApplicationUser> users = new List<ApplicationUser>();
+    private List<CourseModel> courses = new List<CourseModel>();
+
+
     public ApplicationUser user = new ApplicationUser();
     public ApplicationUser editingUser = new ApplicationUser();
     public string setClass = "hide";
@@ -120,17 +104,23 @@
         }
     }
 
-
     public async Task GetUserInfo(string userId)
     {
+        courses.Clear();
         try
         {
             user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-
             editingUser.FirstName = user.FirstName;
             editingUser.LastName = user.LastName;
             editingUser.IsAdmin = user.IsAdmin;
             editingUser.IsSubscribed = user.IsSubscribed;
+
+            var courseList = _context.UserCourses.Where(x => x.UserId == userId).ToList();
+            foreach (var course in courseList)
+            {
+                var result = await GetSingleCourse(course.CourseId);
+                courses.Add(result);
+            }
 
             StatusMessage = "";
             DisableInputs = false;
@@ -168,5 +158,69 @@
             Debug.WriteLine(ex.Message);
             StatusMessage = "User was not updated, something went wrong.";
         }
+    }
+
+    public async Task<CourseModel> GetSingleCourse(string id)
+    {
+        var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{id}\") {{ id title authors {{ name }} }} }}" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<RootObject>(jsonString);
+            var course = result?.Data?.getCourseById;
+
+            return course!;
+        }
+        return null!;
+    }
+
+    public async Task RemoveCourse(string courseId)
+    {
+        try
+        {
+            var existingUserCourse = await _context.UserCourses.FirstOrDefaultAsync(x => x.UserId == user.Id && x.CourseId == courseId);
+            if (existingUserCourse != null)
+            {
+                _context.UserCourses.Remove(existingUserCourse);
+                await _context.SaveChangesAsync();
+
+                var course = courses.FirstOrDefault(x => x.Id == courseId);
+                courses.Remove(course!);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            StatusMessage = "Course was not removed";
+        }
+    }
+
+    public class CourseModel
+    {
+        public string Id { get; set; }
+        public string Title { get; set; } 
+        public List<AuthorObject> Authors { get; set; }
+    }
+
+    public class AuthorObject
+    {
+        public string Name { get; set; }
+    }
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; } = null!;
+    }
+
+    public class RootObject
+    {
+        public GetCoursesResponse Data { get; set; } = null!;
+    }
+
+    public class GetCoursesResponse
+    {
+        public CourseModel getCourseById { get; set; } = null!;
     }
 }

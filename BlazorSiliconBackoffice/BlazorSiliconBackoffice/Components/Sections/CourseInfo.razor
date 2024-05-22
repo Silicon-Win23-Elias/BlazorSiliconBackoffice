@@ -1,181 +1,252 @@
-﻿@* <div class="details">
-    <h1>Manage courseModel</h1>
-    <EditForm FormName="courseModelForm" Model="courseModel" id="basicInfo" method="post" novalidate class="basic-info">
+﻿@using Newtonsoft.Json
+@using System.Text
+@inject NavigationManager Navigation
+
+<div class="details">
+    <h1>Manage course</h1>
+    @if (Message != null )
+    {
+        <div class="top-buttons">
+            <button class="btn-theme" @onclick="CreateNewCourse">Create new</button>
+            <button class="btn-red" @onclick="() => DeleteCourse(Message)">Remove</button>
+        </div>
+    }
+    <p>@StatusMessage</p>
+    <EditForm FormName="courseModelForm" OnValidSubmit="SaveCourse" Model="formModel" Enctype="multipart/form-data" id="basicInfo" method="post" novalidate class="basic-info">
+        <DataAnnotationsValidator />
         <h4>Basic Info</h4>
+
         <div class="group">
             <div class="label-input">
                 <label>Title</label>
-                <span asp-validation-for="@Model.FirstName"></span>
-                <InputText @bind-Value="courseModel.courseModelTitle" placeholder="Enter title" class="input" />
+                <ValidationMessage For="@(() => formModel.Title)" />
+                <InputText @bind-Value="formModel.Title" placeholder="Enter title" class="input" />
             </div>
             <div class="label-input">
                 <label>Subtitle</label>
-                <span asp-validation-for="@Model.FirstName"></span>
-                <InputText @bind-Value="courseModel.Subtitle" placeholder="Enter subtitle" class="input" />
+                <ValidationMessage For="@(() => formModel.Subtitle)" />
+                <InputText @bind-Value="formModel.Subtitle" placeholder="Enter subtitle" class="input" />
             </div>
             <div class="label-input">
                 <label>Author</label>
-                <span asp-validation-for="@Model.LastName"></span>
-                <InputText @bind-Value="courseModel.Author" placeholder="Enter author" class="input" />
+                <ValidationMessage For="@(() => formModel.AuthorName)" />
+                <InputText @bind-Value="formModel.AuthorName" placeholder="Enter author" class="input" />
             </div>
         </div>
+
         <div class="group">
             <div class="label-input">
                 <label>Price</label>
-                <span asp-validation-for="@Model.Email"></span>
-                <InputText @bind-Value="courseModel.OldPrice" placeholder="Enter price" class="input" />
+                <ValidationMessage For="@(() => formModel.Price)" />
+                <InputNumber @bind-Value="formModel.Price" placeholder=" Enter price" class="input" />
             </div>
             <div class="label-input">
-                <label>Discount price</label>
-                span asp-validation-for="@Model.Phone"></span>
-                <InputText @bind-Value="courseModel.NewPrice" placeholder="Enter discount price" class="input" />
+                <label>Currency</label>
+                <ValidationMessage For="@(() => formModel.Currency)" />
+                <InputText @bind-Value="formModel.Currency" placeholder="Enter currency" class="input" />
             </div>
         </div>
+        <div class="label-input">
+            <label>Discount price</label>
+            <ValidationMessage For="@(() => formModel.Discount)" />
+            <InputNumber @bind-Value="formModel.Discount" placeholder="Enter discount price" class="input" />
+        </div>
+
         <div>
             <label>Description</label>
-            <InputTextArea @bind-Value="courseModel.Description" class="input" placeholder="Add a description..." />
+            <ValidationMessage For="@(() => formModel.CourseDescription)" />
+            <InputTextArea @bind-Value="formModel.CourseDescription" class="input" placeholder="Add a description..." />
         </div>
         <div class="group mt-4">
             <div class="label-input">
-                <label for="uploadFile">courseModel image</label>
-                <InputFile @bind-Value="courseModel.BackgroundImage" id="uploadFile" />
+                <ValidationMessage For="@(() => formModel.ImageUri)" />
+                <InputFile OnChange="HandleUpload" accept="image/" id="uploadFile" name="file" />
             </div>
         </div>
 
-        <h4>What you'll learn</h4>
-        <h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
-       <div class="group">
-            <div class="label-input">
-                <label>Learn #1</label>
-                <span asp-validation-for="@Model.FirstName"></span>
-                <InputText @bind-Value="courseModel.WhatYouLearns.d"  placeholder="Enter learn #1" class="input" />
-            </div>
-            <div class="label-input">
-                <label>Learn #2</label>
-                <span asp-validation-for="@Model.LastName"></span>
-                <InputText placeholder="Enter learn #2" class="input" />
-            </div>
+        <div class="label-input">
+            <label>Star rating</label>
+            <ValidationMessage For="@(() => formModel.StarRating)" />
+            <InputNumber @bind-Value="formModel.StarRating" placeholder="Enter star rating" class="input" />
         </div>
+        <div class="label-input">
+            <label>Reviews</label>
+            <ValidationMessage For="@(() => formModel.Reviews)" />
+            <InputText @bind-Value="formModel.Reviews" placeholder="Enter amount of reviews" class="input" />
+        </div>
+
         <div class="group">
             <div class="label-input">
-                <label>Learn #3</label>
-                <span asp-validation-for="@Model.Email"></span>
-                <InputText placeholder="Enter learn #3" class="input" />
+                <label>Likes percent</label>
+                <ValidationMessage For="@(() => formModel.LikesPercent)" />
+                <InputText @bind-Value="formModel.LikesPercent" placeholder="Enter likes percent" class="input" />
             </div>
             <div class="label-input">
-                <label>Learn #4</label>
-                span asp-validation-for="@Model.Phone"></span>
-                <InputText placeholder="Enter learn #4" class="input" />
+                <label>Likes</label>
+                <ValidationMessage For="@(() => formModel.Likes)" />
+                <InputText @bind-Value="formModel.Likes" placeholder="Enter amount of likes" class="input" />
             </div>
             <div class="label-input">
-                <label>Learn #5</label>
-                span asp-validation-for="@Model.Phone"></span>
-                <InputText placeholder="Enter learn #5" class="input" />
+                <label>Duration</label>
+                <ValidationMessage For="@(() => formModel.Duration)" />
+                <InputText @bind-Value="formModel.Duration" placeholder="Enter amount of hours" class="input" />
+            </div>
+        </div> 
+
+       <h4>Course includes</h4>
+       <div class="group">
+            <div class="label-input">
+                <label>Includes #1</label>
+                <ValidationMessage For="@(() => formModel.Include1)" />
+                <InputText @bind-Value="formModel.Include1" placeholder="Enter what the course includes" class="input" />
+            </div>
+            <div class="label-input">
+                <label>Includes #2</label>
+                <ValidationMessage For="@(() => formModel.Include2)" />
+                <InputText @bind-Value="formModel.Include2" placeholder="Enter what the course includes" class="input" />
             </div>
         </div>
 
-        <h4>courseModel includes</h4>
-        <h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
-       <div class="group">
-            <div class="label-input">
-                <label>Amount of hours</label>
-                <span asp-validation-for="@Model.FirstName"></span>
-                <InputText @bind-Value="courseModel.Duration" placeholder="Enter hours of content" class="input" />
-            </div>
-            <div class="label-input">
-                <label>Amount of articles</label>
-                <span asp-validation-for="@Model.LastName"></span>
-                <InputText @bind-Value="courseModel.Includes." placeholder="Enter article amount" class="input" />
-            </div>
-        </div>
         <div class="group">
             <div class="label-input">
-                <label>Downloadable resources</label>
-                <span asp-validation-for="@Model.Email"></span>
-                <InputText placeholder="Enter resource amount" class="input" />
+                <label>Includes #3</label>
+                <ValidationMessage For="@(() => formModel.Include3)" />
+                <InputText @bind-Value="formModel.Include3" placeholder="Enter what the course includes" class="input" />
+            </div>
+            <div class="label-input">
+                <label>Includes #4</label>
+                <ValidationMessage For="@(() => formModel.Include4)" />
+                <InputText @bind-Value="formModel.Include4" placeholder="Enter what the course includes" class="input" />
+            </div>
+            <div class="label-input">
+                <label>Includes #5</label>
+                <ValidationMessage For="@(() => formModel.Include5)" />
+                <InputText @bind-Value="formModel.Include5" placeholder="Enter what the course includes" class="input" />
             </div>
         </div>
-        <div class="address-lines">
+
+        <h4>Categories</h4>
+        <div class="group">
             <div class="label-input">
-                <input type="checkbox" class="checkbox">
-                <label>Lifetime access</label>
+                <label>Category #1</label>
+                <ValidationMessage For="@(() => formModel.Category1)" />
+                <InputText @bind-Value="formModel.Category1" placeholder="Enter category" class="input" />
             </div>
             <div class="label-input">
-                <input type="checkbox" class="checkbox">
-                <label>Completion certificate</label>
+                <label>Category #2</label>
+                <ValidationMessage For="@(() => formModel.Category2)" />
+                <InputText @bind-Value="formModel.Category2" placeholder="Enter category" class="input" />
+            </div>
+            <div class="label-input">
+                <label>Category #3</label>
+                <ValidationMessage For="@(() => formModel.Category3)" />
+                <InputText @bind-Value="formModel.Category3" placeholder="Enter category" class="input" />
             </div>
         </div>
 
         <h4>Program details</h4>
-        <h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
        <div class="group">
             <div class="label-input">
-                <label>Detail #1 Title</label>
-                <InputText @bind-Value="courseModel.ProgramDetailsTitle" placeholder="Enter title" class="input" />
+                <label>Program detail title #1</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle1)" />
+                <InputText @bind-Value="formModel.ProgramTitle1" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #1 description</label>
-            <InputTextArea @bind-Value="courseModel.ProgramDetailsDescription" class="input program-description" placeholder="Add a description..." />
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #1</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription1)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription1" placeholder="Enter detail description" class="input" />
+            </div>
         </div>
 
         <div class="group">
             <div class="label-input">
-                <label>Detail #2 Title</label>
-                <InputText @bind-Value="courseModel.ProgramDetailsTitle" placeholder="Enter title" class="input" />
+                <label>Program detail title #2</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle2)" />
+                <InputText @bind-Value="formModel.ProgramTitle2" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #2 description</label>
-            <InputTextArea @bind-Value="courseModel.ProgramDetailsDescription" class="input program-description" placeholder="Add a description..." />
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #2</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription2)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription2" placeholder="Enter detail description" class="input" />
+            </div>
         </div>
 
         <div class="group">
             <div class="label-input">
-                <label>Detail #3 Title</label>
-                <InputText placeholder="Enter title" class="input" />
+                <label>Program detail title #3</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle3)" />
+                <InputText @bind-Value="formModel.ProgramTitle3" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #3 description</label>
-            <InputTextArea class="input program-description" placeholder="Add a description..."/>
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #3</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription3)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription3" placeholder="Enter detail description" class="input" />
+            </div>
         </div>
 
         <div class="group">
             <div class="label-input">
-                <label>Detail #4 Title</label>
-                <InputText placeholder="Enter title" class="input" />
+                <label>Program detail title #4</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle4)" />
+                <InputText @bind-Value="formModel.ProgramTitle4" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #4 description</label>
-            <InputTextArea class="input program-description" placeholder="Add a description..."/>
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #4</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription4)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription4" placeholder="Enter detail description" class="input" />
+            </div>
         </div>
 
         <div class="group">
             <div class="label-input">
-                <label>Detail #5 Title</label>
-                <InputText placeholder="Enter title" class="input" />
+                <label>Program detail title #5</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle5)" />
+                <InputText @bind-Value="formModel.ProgramTitle5" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #5 description</label>
-            <InputTextArea class="input program-description" placeholder="Add a description..."/>
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #5</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription5)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription5" placeholder="Enter detail description" class="input" />
+            </div>
         </div>
 
         <div class="group">
             <div class="label-input">
-                <label>Detail #6 Title</label>
-                <InputText placeholder="Enter title" class="input" />
+                <label>Program detail title #6</label>
+                <ValidationMessage For="@(() => formModel.ProgramTitle6)" />
+                <InputText @bind-Value="formModel.ProgramTitle6" placeholder="Enter detail title" class="input" />
             </div>
         </div>
-        <div>
-            <label>Detail #6 description</label>
-            <InputTextArea class="input program-description" placeholder="Add a description..."/>
+        <div class="group">
+            <div class="label-input">
+                <label>Program detail description #6</label>
+                <ValidationMessage For="@(() => formModel.ProgramDescription6)" />
+                <InputTextArea @bind-Value="formModel.ProgramDescription6" placeholder="Enter detail description" class="input" />
+            </div>
+        </div>
+
+        <div class="address-lines">
+            <div class="label-input">
+                <InputCheckbox @bind-Value="formModel.IsBestSeller" class="checkbox" />
+                <label>Bestseller</label>
+            </div>
+            <div class="label-input">
+                <InputCheckbox @bind-Value="formModel.IsDigital" class="checkbox" />
+                <label>Digital</label>
+            </div>
         </div>
 
 
-        <input type="hidden" asp-for="@Model.UserId" />
         <div class="buttons">
             <button class="btn-gray" type="reset">Cancel</button>
             <button class="btn-theme" type="submit">Save changes</button>
@@ -184,96 +255,507 @@
 </div>
 
 @code {
-    public CourseModel courseModel = new courseModel();
-    public ProgramDetailsModel detailsModel = new ProgramDetailsModel();
+    public string StatusMessage { get; set; } = "";
+    private List<CourseCardModel> courseList = new();
 
+    private string message;
 
-    public class courseModelEntity
+    [Parameter]
+    public string Message
     {
-        public int Id { get; set; }
-        public string courseModelTitle { get; set; } = null!;
-        public string Subtitle { get; set; } = null!;
-        public string Reviews { get; set; } = null!;
-        public string Likes { get; set; } = null!;
-        public string Duration { get; set; } = null!;
-        public string Author { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public string NewPrice { get; set; } = null!;
-        public string OldPrice { get; set; } = null!;
-        public string AuthorDescription { get; set; } = null!;
-        public string Subscribers { get; set; } = null!;
-        public string Followers { get; set; } = null!;
-        public string AuthorIcon { get; set; } = null!;
-        public string AuthorImage { get; set; } = null!;
-        public string BackgroundImage { get; set; } = null!;
-        public string LikesPercent { get; set; } = null!;
+        get => message;
+        set
+        {
+            if (message != value)
+            {
+                message = value;
 
-        public ICollection<ApplicationUser>? Users { get; set; }
-        public ICollection<TagEntity>? Tags { get; set; } = null!;
-        public ICollection<WhatYouLearnEntity> WhatYouLearns { get; set; } = null!;
-        public ICollection<IncludesEntity> Includes { get; set; } = null!;
-        public ICollection<ProgramDetailsEntity> ProgramDetails { get; set; } = null!;
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    GetSingleCourse();
+                }
+            }
+        }
     }
 
-    public class CourseModel
+    [SupplyParameterFromForm]
+    public FormModel formModel { get; set; } = new FormModel();
+
+    private async Task SaveCourse()
     {
-        public int Id { get; set; }
-        public string courseModelTitle { get; set; } = null!;
-        public List<string> Tags { get; set; } = [];
-        public string Subtitle { get; set; } = null!;
-        public string Reviews { get; set; } = null!;
-        public string Likes { get; set; } = null!;
-        public string Duration { get; set; } = null!;
-        public string Author { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public List<string> WhatYouLearn { get; set; } = [];
-        public List<string> Includes { get; set; } = [];
-        public string NewPrice { get; set; } = null!;
-        public string OldPrice { get; set; } = null!;
-        public List<string> ProgramDetailsTitle { get; set; } = [];
-        public List<string> ProgramDetailsDescription { get; set; } = [];
-        public string AuthorDescription { get; set; } = null!;
-        public string Subscribers { get; set; } = null!;
-        public string Followers { get; set; } = null!;
-        public string AuthorIcon { get; set; } = null!;
-        public string AuthorImage { get; set; } = null!;
-        public string BackgroundImage { get; set; } = null!;
-        public string LikesPercent { get; set; } = null!;
+        var random = new Random();
+        using var client = new HttpClient();
+
+        if (!string.IsNullOrWhiteSpace(Message))
+        {
+            var updateQuery = new
+            {
+                query = @"mutation ($input: CourseUpdateRequestInput!) { updateCourse(input: $input) { id title } }",
+                variables = new
+                {
+                    input = new
+                    {
+                        id = Message,
+                        imageUri = formModel.ImageUri,
+                        imageHeaderUri = formModel.ImageUri,
+                        isBestSeller = formModel.IsBestSeller,
+                        isDigital = formModel.IsDigital,
+                        categories = new[] { formModel.Category1, formModel.Category2, formModel.Category3 },
+                        title = formModel.Title,
+                        subtitle = formModel.Subtitle,
+                        starRating = formModel.StarRating,
+                        reviews = formModel.Reviews,
+                        likesPercent = formModel.LikesPercent,
+                        likes = formModel.Likes,
+                        duration = formModel.Duration,
+                        authors = new[]
+                    {
+                        new { name = formModel.AuthorName }
+                    },
+                        prices = new
+                        {
+                            currency = formModel.Currency,
+                            price = formModel.Price,
+                            discount = formModel.Discount
+                        },
+                        content = new
+                        {
+                            description = formModel.CourseDescription,
+                            includes = new[]
+                        {
+                            formModel.Include1,
+                            formModel.Include2,
+                            formModel.Include3,
+                            formModel.Include4,
+                            formModel.Include5
+                        },
+                            programDetails = new[]
+                        {
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle1, description = formModel.ProgramDescription1 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle2, description = formModel.ProgramDescription2 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle3, description = formModel.ProgramDescription3 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle4, description = formModel.ProgramDescription4 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle5, description = formModel.ProgramDescription5 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle6, description = formModel.ProgramDescription6 },
+                        }
+                        }
+                    }
+                }
+            };
+
+            var updateUrl = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
+            var updateJson = JsonConvert.SerializeObject(updateQuery);
+            var updateContent = new StringContent(updateJson, Encoding.UTF8, "application/json");
+            var updateResponse = await client.PostAsync(updateUrl, updateContent);
+
+            if (updateResponse.IsSuccessStatusCode)
+            {
+                StatusMessage = "Course updated successfully!";
+            }
+            else
+            {
+                StatusMessage = "Something went wrong, course not updated.";
+            }
+        }
+
+        else
+        {
+            var query = new
+            {
+                query = @"mutation ($input: CourseCreateRequestInput!) { createCourse(input: $input) { id title } }",
+                variables = new
+                {
+                    input = new
+                    {
+                        imageUri = formModel.ImageUri,
+                        imageHeaderUri = formModel.ImageUri,
+                        isBestSeller = formModel.IsBestSeller,
+                        isDigital = formModel.IsDigital,
+                        categories = new[] { formModel.Category1, formModel.Category2, formModel.Category3 },
+                        title = formModel.Title,
+                        subtitle = formModel.Subtitle,
+                        starRating = formModel.StarRating,
+                        reviews = formModel.Reviews,
+                        likesPercent = formModel.LikesPercent,
+                        likes = formModel.Likes,
+                        duration = formModel.Duration,
+                        authors = new[]
+                    {
+                        new { name = formModel.AuthorName }
+                    },
+                        prices = new
+                        {
+                            currency = formModel.Currency,
+                            price = formModel.Price,
+                            discount = formModel.Discount
+                        },
+                        content = new
+                        {
+                            description = formModel.CourseDescription,
+                            includes = new[]
+                        {
+                            formModel.Include1,
+                            formModel.Include2,
+                            formModel.Include3,
+                            formModel.Include4,
+                            formModel.Include5
+                        },
+                            programDetails = new[]
+                        {
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle1, description = formModel.ProgramDescription1 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle2, description = formModel.ProgramDescription2 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle3, description = formModel.ProgramDescription3 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle4, description = formModel.ProgramDescription4 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle5, description = formModel.ProgramDescription5 },
+                            new { id = random.Next(0, 9999), title = formModel.ProgramTitle6, description = formModel.ProgramDescription6 },
+                        }
+                        }
+                    }
+                }
+            };
+
+            var url = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
+            var json = JsonConvert.SerializeObject(query);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                StatusMessage = "Course created successfully!";
+            }
+            else
+            {
+                StatusMessage = "Something went wrong, course not created.";
+            }
+        }
+
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
     }
 
-    public class IncludesEntity
+    private void CreateNewCourse()
     {
-        public int Id { get; set; }
-        public string Description { get; set; } = null!;
-        public ICollection<courseModelEntity> courseModels { get; set; } = null!;
+        Message = "";
+
+        formModel.ImageUri = string.Empty;
+        formModel.IsBestSeller = false;
+        formModel.IsDigital = false;
+        formModel.Title = string.Empty;
+        formModel.Subtitle = string.Empty;
+        formModel.StarRating = 0;
+        formModel.Reviews = string.Empty;
+        formModel.LikesPercent = string.Empty;
+        formModel.Likes = string.Empty;
+        formModel.Duration = string.Empty;
+        formModel.Currency = string.Empty;
+        formModel.Price = 0;
+        formModel.Discount = 0;
+        formModel.AuthorName = string.Empty;
+        formModel.CourseDescription = string.Empty;
+        formModel.Include1 = string.Empty;
+        formModel.Include2 = string.Empty;
+        formModel.Include3 = string.Empty;
+        formModel.Include4 = string.Empty;
+        formModel.Include5 = string.Empty;
+        formModel.ProgramTitle1 = string.Empty;
+        formModel.ProgramTitle2 = string.Empty;
+        formModel.ProgramTitle3 = string.Empty;
+        formModel.ProgramTitle4 = string.Empty;
+        formModel.ProgramTitle5 = string.Empty;
+        formModel.ProgramTitle6 = string.Empty;
+        formModel.ProgramDescription1 = string.Empty;
+        formModel.ProgramDescription2 = string.Empty;
+        formModel.ProgramDescription3 = string.Empty;
+        formModel.ProgramDescription4 = string.Empty;
+        formModel.ProgramDescription5 = string.Empty;
+        formModel.ProgramDescription6 = string.Empty;
+        formModel.Category1 = string.Empty;
+        formModel.Category2 = string.Empty;
+        formModel.Category3 = string.Empty;
+
+        StateHasChanged();
     }
 
-    public class ProgramDetailsEntity
+    private async Task HandleUpload(InputFileChangeEventArgs e)
     {
-        public int Id { get; set; }
+        if (e.File != null)
+        {
+            var buffer = new byte[e.File.Size];
+            using (var stream = e.File.OpenReadStream())
+            {
+                await stream.ReadAsync(buffer, 0, (int)e.File.Size);
+            }
+            formModel.File = new FormFile(new MemoryStream(buffer), 0, e.File.Size, e.File.Name, e.File.Name);
+
+            await HandleSubmit();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(formModel.File.OpenReadStream()), "file", formModel.File.FileName);
+
+        var response = await Http.PostAsync("https://fileprovidersilicon.azurewebsites.net/api/Upload?code=Nm7k4Uo1fWs2StOObEVS8WpMs3BUZwXzFm3gQMp3gcEVAzFuIbOA9Q%3D%3D&containerName=courses", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var imageUrlModel = JsonConvert.DeserializeObject<ReturnUrl>(jsonString)!;
+
+            formModel.ImageUri = imageUrlModel.FilePath;
+        }
+    }
+
+    public async Task GetSingleCourse()
+    {
+        var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{Message}\") {{ id title imageUri imageHeaderUri isBestSeller isDigital categories subtitle starRating reviews likesPercent likes duration authors {{ name }} prices {{ currency price discount }} content {{ description includes programDetails {{ id title description }} }} }} }}" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<RootObject>(jsonString);
+            var course = result?.Data?.getCourseById;
+
+            formModel.ImageUri = course.ImageUri;
+            formModel.IsBestSeller = course.IsBestSeller;
+            formModel.IsDigital = course.IsDigital;
+            formModel.Title = course.Title;
+            formModel.Subtitle = course.Subtitle;
+            formModel.StarRating = course.StarRating;
+            formModel.Reviews = course.Reviews;
+            formModel.LikesPercent = course.LikesPercent;
+            formModel.Likes = course.Likes;
+            formModel.Duration = course.Duration;
+            formModel.Currency = course.Prices.Currency;
+            formModel.Price = course.Prices.Price;
+            formModel.Discount = course.Prices.Discount;
+            formModel.AuthorName = course.Authors[0].Name;
+            formModel.CourseDescription = course.Content.Description;
+            formModel.Include1 = course.Content.Includes[0];
+            formModel.Include2 = course.Content.Includes[1];
+            formModel.Include3 = course.Content.Includes[2];
+            formModel.Include4 = course.Content.Includes[3];
+            formModel.Include5 = course.Content.Includes[4];
+            formModel.ProgramTitle1 = course.Content.ProgramDetails[0].Title;
+            formModel.ProgramTitle2 = course.Content.ProgramDetails[1].Title;
+            formModel.ProgramTitle3 = course.Content.ProgramDetails[2].Title;
+            formModel.ProgramTitle4 = course.Content.ProgramDetails[3].Title;
+            formModel.ProgramTitle5 = course.Content.ProgramDetails[4].Title;
+            formModel.ProgramTitle6 = course.Content.ProgramDetails[5].Title;
+            formModel.ProgramDescription1 = course.Content.ProgramDetails[0].Description;
+            formModel.ProgramDescription2 = course.Content.ProgramDetails[1].Description;
+            formModel.ProgramDescription3 = course.Content.ProgramDetails[2].Description;
+            formModel.ProgramDescription4 = course.Content.ProgramDetails[3].Description;
+            formModel.ProgramDescription5 = course.Content.ProgramDetails[4].Description;
+            formModel.ProgramDescription6 = course.Content.ProgramDetails[5].Description;
+            formModel.Category1 = course.Categories[0];
+            formModel.Category2 = course.Categories[1];
+            formModel.Category3 = course.Categories[2];
+            StateHasChanged();
+        }
+    }
+
+    public async Task DeleteCourse(string id)
+    {
+        using var client = new HttpClient();
+        var query = new
+        {
+            query = @"mutation ($id: String!) { deleteCourse(id: $id) }",
+            variables = new
+            {
+                id = id,
+            }
+        };
+
+        var url = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
+        var json = JsonConvert.SerializeObject(query);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(url, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Image URI is required")]
+        public string ImageUri { get; set; } = null!;
+
+        public IFormFile File { get; set; } = null!;
+
+        public bool IsBestSeller { get; set; } = false;
+
+        public bool IsDigital { get; set; } = false;
+
+        [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public ICollection<courseModelEntity> courseModels { get; set; } = null!;
+
+        [Required(ErrorMessage = "Subtitle is required")]
+        public string Subtitle { get; set; } = null!;
+
+        public int StarRating { get; set; }
+
+        [Required(ErrorMessage = "Reviews is required")]
+        public string Reviews { get; set; } = null!;
+
+        [Required(ErrorMessage = "Likes percent is required")]
+        public string LikesPercent { get; set; } = null!;
+
+        [Required(ErrorMessage = "Likes is required")]
+        public string Likes { get; set; } = null!;
+
+        [Required(ErrorMessage = "Duration is required")]
+        public string Duration { get; set; } = null!;
+
+        [Required(ErrorMessage = "Currency is required")]
+        public string Currency { get; set; } = null!;
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+        public decimal Price { get; set; }
+
+        public decimal Discount { get; set; }
+
+        [Required(ErrorMessage = "Author is required")]
+        public string AuthorName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Description is required")]
+        public string CourseDescription { get; set; } = null!;
+
+        [Required(ErrorMessage = "Include is required")]
+        public string Include1 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Include is required")]
+        public string Include2 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Include is required")]
+        public string Include3 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Include is required")]
+        public string Include4 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Include is required")]
+        public string Include5 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle1 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle2 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle3 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle4 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle5 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program title is required")]
+        public string ProgramTitle6 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription1 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription2 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription3 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription4 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription5 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Program description is required")]
+        public string ProgramDescription6 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Category is required")]
+        public string Category1 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Category is required")]
+        public string Category2 { get; set; } = null!;
+
+        [Required(ErrorMessage = "Category is required")]
+        public string Category3 { get; set; } = null!;
     }
 
-    public class TagEntity
+    public class FileUploadModel
+    {
+        public IFormFile File { get; set; } = null!;
+    }
+
+    public class ReturnUrl
+    {
+        public string FileName { get; set; } = null!;
+        public string FilePath { get; set; } = null!;
+        public string? ContentType { get; set; }
+        public string? ContainerName { get; set; }
+    }
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; } = null!;
+    }
+
+    public class RootObject
+    {
+        public GetCoursesResponse Data { get; set; } = null!;
+    }
+
+    public class GetCoursesResponse
+    {
+        public CourseCardModel getCourseById { get; set; } = null!;
+    }
+
+    public class CourseCardModel
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string ImageUri { get; set; }
+        public string ImageHeaderUri { get; set; }
+        public bool IsBestSeller { get; set; }
+        public bool IsDigital { get; set; }
+        public List<string> Categories { get; set; }
+        public string Subtitle { get; set; }
+        public int StarRating { get; set; }
+        public string Reviews { get; set; }
+        public string LikesPercent { get; set; }
+        public string Likes { get; set; }
+        public string Duration { get; set; }
+        public List<AuthorObject> Authors { get; set; }
+        public PricesObject Prices { get; set; }
+        public ContentObject Content { get; set; }
+    }
+
+    public class AuthorObject
+    {
+        public string Name { get; set; }
+    }
+
+    public class PricesObject
+    {
+        public string Currency { get; set; }
+        public decimal Price { get; set; }
+        public decimal Discount { get; set; }
+    }
+
+    public class ContentObject
+    {
+        public string Description { get; set; }
+        public List<string> Includes { get; set; }
+        public List<ProgramDetailObject> ProgramDetails { get; set; }
+    }
+
+    public class ProgramDetailObject
     {
         public int Id { get; set; }
-        public string Description { get; set; } = null!;
-        public ICollection<courseModelEntity>? courseModels { get; set; }
-    }
-
-    public class WhatYouLearnEntity
-    {
-        public int Id { get; set; }
-        public string Description { get; set; } = null!;
-        public ICollection<courseModelEntity> courseModels { get; set; } = null!;
-    }
-
-    public class ProgramDetailsModel
-    {
-        public string DetailTitle { get; set; } = null!;
-        public string DetailDescription { get; set; } = null!;
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
 }
- *@
