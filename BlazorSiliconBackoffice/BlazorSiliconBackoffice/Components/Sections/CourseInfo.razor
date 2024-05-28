@@ -283,8 +283,21 @@
 
     private async Task SaveCourse()
     {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claims = authenticationState.User;
+
+        var user = await UserManager.GetUserAsync(claims);
+
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(user.Id, user.Email!);
+        }
+
         var random = new Random();
-        using var client = new HttpClient();
 
         if (!string.IsNullOrWhiteSpace(Message))
         {
@@ -346,7 +359,7 @@
             var updateUrl = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
             var updateJson = JsonConvert.SerializeObject(updateQuery);
             var updateContent = new StringContent(updateJson, Encoding.UTF8, "application/json");
-            var updateResponse = await client.PostAsync(updateUrl, updateContent);
+            var updateResponse = await Http.PostAsync(updateUrl, updateContent);
 
             if (updateResponse.IsSuccessStatusCode)
             {
@@ -417,7 +430,7 @@
             var url = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
             var json = JsonConvert.SerializeObject(query);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
+            var response = await Http.PostAsync(url, content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -508,6 +521,21 @@
 
     public async Task GetSingleCourse()
     {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claims = authenticationState.User;
+
+        var user = await UserManager.GetUserAsync(claims);
+
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(user.Id, user.Email!);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+
         var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{Message}\") {{ id title imageUri imageHeaderUri isBestSeller isDigital categories subtitle starRating reviews likesPercent likes duration authors {{ name }} prices {{ currency price discount }} content {{ description includes programDetails {{ id title description }} }} }} }}" };
         var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
 
@@ -558,7 +586,22 @@
 
     public async Task DeleteCourse(string id)
     {
-        using var client = new HttpClient();
+
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claims = authenticationState.User;
+
+        var user = await UserManager.GetUserAsync(claims);
+
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(user.Id, user.Email!);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+
         var query = new
         {
             query = @"mutation ($id: String!) { deleteCourse(id: $id) }",
@@ -571,7 +614,7 @@
         var url = "https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D";
         var json = JsonConvert.SerializeObject(query);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(url, content);
+        var response = await Http.PostAsync(url, content);
 
         if (response.IsSuccessStatusCode)
         {

@@ -1,5 +1,46 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
 
+
+@media (min-width: 768px) {
+    #chat {
+        padding-left: 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    #chat {
+        padding-left: 100px;
+    }
+}
+
+#chat .chat-window {
+    height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#chat .chat-bubble-right {
+    text-align: right;
+    background-color: #6366F1;
+    color: #FFFFFF;
+    margin-left: auto;
+    border-radius: 15px;
+    padding: 10px;
+    max-width: 75%;
+}
+
+#chat .chat-bubble-left {
+    text-align: left;
+    background-color: #c1d1fe;
+    margin-right: auto;
+    border-radius: 15px;
+    padding: 10px;
+    max-width: 75%;
+}
+
+
+
 html, body {
     line-height: 160%;
     font-weight: 400;

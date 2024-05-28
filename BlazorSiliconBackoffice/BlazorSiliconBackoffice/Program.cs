@@ -1,6 +1,7 @@
 using BlazorSiliconBackoffice.Components;
 using BlazorSiliconBackoffice.Components.Account;
 using BlazorSiliconBackoffice.Data;
+using BlazorSiliconBackoffice.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<CookieService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddAuthentication(options =>
