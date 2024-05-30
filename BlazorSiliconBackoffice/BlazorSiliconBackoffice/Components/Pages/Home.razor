@@ -54,19 +54,23 @@
 
             <div class="savedCourses">
                 <h4>User saved courses</h4>
-                @foreach (var course in courses)
+                @if (courses != null)
                 {
-                    <div class="courseInfo">
-                        <div class="info">
-                            <p class="title">@course.Title</p>
-                            <p class="author">By @foreach (var author in course.Authors)
-                                {
-                                    @author.Name
-                                }
-                            </p>
+                    @foreach (var course in courses)
+                    {
+                        <div class="courseInfo">
+                            <div class="info">
+                                <p class="title">@course.Title</p>
+                                <p class="author">
+                                    By @foreach (var author in course.Authors)
+                                    {
+                                        @author.Name
+                                    }
+                                </p>
+                            </div>
+                            <button class="btn-red" @onclick="(() => RemoveCourse(course.Id))">Remove</button>
                         </div>
-                        <button class="btn-red" @onclick="(() => RemoveCourse(course.Id))">Remove</button>
-                    </div>
+                    }
                 }
             </div>
         </div>
@@ -116,10 +120,13 @@
             editingUser.IsSubscribed = user.IsSubscribed;
 
             var courseList = _context.UserCourses.Where(x => x.UserId == userId).ToList();
-            foreach (var course in courseList)
+            if (courseList != null)
             {
-                var result = await GetSingleCourse(course.CourseId);
-                courses.Add(result);
+                foreach (var course in courseList)
+                {
+                    var result = await GetSingleCourse(course.CourseId);
+                    courses.Add(result);
+                }
             }
 
             StatusMessage = "";
@@ -128,7 +135,6 @@
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            StatusMessage = "User was not updated, something went wrong.";
         }
     }
 

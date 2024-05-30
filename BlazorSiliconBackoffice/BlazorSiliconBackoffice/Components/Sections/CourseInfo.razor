@@ -618,6 +618,16 @@
 
         if (response.IsSuccessStatusCode)
         {
+            var courseList = _context.UserCourses.Where(x => x.CourseId == id).ToList();
+            if (courseList != null)
+            {
+                foreach (var course in courseList)
+                {
+                    _context.UserCourses.Remove(course);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }
